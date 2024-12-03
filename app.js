@@ -75,6 +75,10 @@ app.post('/login', (req, res) => {
     );
 });
 
+app.get("/options", (req, res) => {
+    res.render("options.ejs");
+});
+
 app.listen(port, () => {
-    console.log("Server is running on http://localhost:${port}");
+    console.log(`Server is running on http://localhost:${port}`);
 });
