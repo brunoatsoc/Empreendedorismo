@@ -22,6 +22,14 @@ CREATE TABLE Produto_Servico (
     FOREIGN KEY (Cliente_ID) REFERENCES Cliente(Cliente_ID)
 );
 
+CREATE TABLE Carrinho (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Produto_Servico INT,
+    Cliente_ID INT, -- Relaciona o carrinho com o cliente
+    FOREIGN KEY (Produto_Servico) REFERENCES Produto_Servico(OS_ID),
+    FOREIGN KEY (Cliente_ID) REFERENCES Cliente(Cliente_ID)
+);
+
 CREATE TABLE Funcionario (
     Tecnico_ID INT PRIMARY KEY AUTO_INCREMENT,
     Tecnico_nome VARCHAR(255),
@@ -85,12 +93,6 @@ CREATE TABLE Fluxo_Caixa (
 CREATE TABLE Entrega (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     Data_Entrega DATE
-);
-
-CREATE TABLE Carrinho (
-    Id INT PRIMARY KEY AUTO_INCREMENT,
-    Produto_Servico INT,
-    FOREIGN KEY (Produto_Servico) REFERENCES Produto_Servico(OS_ID)
 );
 
 CREATE TABLE Plano_Operacional (
