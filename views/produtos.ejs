@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos e Serviços</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Produtos e Serviços</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data de Abertura</th>
+                <th>Data de Fechamento</th>
+                <th>Status</th>
+                <th>Solução</th>
+                <th>Descrição do Problema</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% produtos.forEach(produto => { %>
+                <tr>
+                    <td><%= produto.OS_ID %></td>
+                    <td><%= produto.OS_data_abertura %></td>
+                    <td><%= produto.OS_data_fechamento %></td>
+                    <td><%= produto.OS_status %></td>
+                    <td><%= produto.OS_solucao %></td>
+                    <td><%= produto.OS_descricao_problema %></td>
+                    <td>
+                        <form action="/adicionarAoCarrinho" method="POST" style="display: inline;">
+                            <input type="hidden" name="OS_ID" value="<%= produto.OS_ID %>">
+                            <button type="submit">Adicionar ao Carrinho</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>

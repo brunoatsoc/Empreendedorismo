@@ -7,6 +7,7 @@ const app = express();
 const port = 3000;
 
 clienteEmail = null;
+clienteId = null;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -65,7 +66,7 @@ app.post('/login', (req, res) => {
   
             if(results.length > 0) {
                 clienteEmail = Cliente_email;
-                // clienteSenha = senha;
+                clienteId = results[0].Cliente_ID;
 
                 res.redirect('/options');
             } else {
@@ -77,6 +78,88 @@ app.post('/login', (req, res) => {
 
 app.get("/options", (req, res) => {
     res.render("options.ejs");
+});
+
+app.get('/produtos', (req, res) => {
+    const query = 'SELECT * FROM Produto_Servico';
+
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+
+        // Renderiza a página EJS com os dados obtidos
+        res.render('produtos', { produtos: results });
+    });
+});
+
+app.post('/adicionarAoCarrinho', (req, res) => {
+    const { OS_ID } = req.body; // Obtém o ID do produto enviado pelo formulário
+    var Cliente_ID = null;
+    const query = 'SELECT Cliente_ID FROM Cliente WHERE Cliente_email = ?';
+
+    connection.query(query, [clienteEmail], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar Cliente_ID:', err);
+            return;
+        }
+    
+        if (results.length > 0) {
+            Cliente_ID = results[0].Cliente_ID;
+            res.redirect(`/update_produto_servico/${Cliente_ID}/${OS_ID}`);
+        } else {
+            console.log('Nenhum cliente encontrado com o email fornecido.');
+        }
+    });
+});
+
+app.get('/update_produto_servico/:Cliente_ID/:OS_ID', (req, res) => {
+    const Cliente_ID = req.params.Cliente_ID;
+    const OS_ID = req.params.OS_ID;
+    const query = 'UPDATE Produto_Servico SET Cliente_ID = ? WHERE OS_ID = ?';
+
+    connection.query(query, [Cliente_ID, OS_ID], (err, results) => {
+        if (err) {
+            console.error('Erro ao atualizar Cliente_ID:', err);
+            return res.status(500).send('Erro ao atualizar registro.');
+        }
+
+        res.redirect(`/insert_carrinho/${Cliente_ID}/${OS_ID}`);
+    });
+});
+
+app.get('/insert_carrinho/:Cliente_ID/:OS_ID', (req, res) => {
+    const Cliente_ID = req.params.Cliente_ID;
+    const OS_ID = req.params.OS_ID;
+    const query = 'INSERT INTO Carrinho (Produto_Servico, Cliente_ID) VALUES (?, ?)';
+
+    connection.query(query, [OS_ID, Cliente_ID], (err, results) => {
+        if (err) {
+            console.error('Erro ao inserir no carrinho:', err);
+            return res.status(500).send('Erro ao adicionar ao carrinho.');
+        }
+
+        res.redirect("/produtos");
+    });
+});
+
+app.get('/carrinhoCompras/', async (req, res) => {
+    const query = `SELECT 
+                        ps.OS_descricao_problema AS Produto_Descricao
+                    FROM 
+                        Cliente c
+                    INNER JOIN 
+                        Carrinho ca ON c.Cliente_ID = ca.Cliente_ID
+                    INNER JOIN 
+                        Produto_Servico ps ON ca.Produto_Servico = ps.OS_ID
+                    WHERE ca.Cliente_ID = ?`;
+
+    connection.query(query, [clienteId], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar Carrinho:', err);
+            return;
+        }
+
+        res.render('carrinho', { carrinho: results });
+    });
 });
 
 app.listen(port, () => {
