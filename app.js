@@ -9,6 +9,7 @@ const port = 3000;
 clienteEmail = null;
 clienteId = null;
 
+// Configurações do banco de dados
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -86,13 +87,12 @@ app.get('/produtos', (req, res) => {
     connection.query(query, (err, results) => {
         if (err) throw err;
 
-        // Renderiza a página EJS com os dados obtidos
         res.render('produtos', { produtos: results });
     });
 });
 
 app.post('/adicionarAoCarrinho', (req, res) => {
-    const { OS_ID } = req.body; // Obtém o ID do produto enviado pelo formulário
+    const { OS_ID } = req.body;
     var Cliente_ID = null;
     const query = 'SELECT Cliente_ID FROM Cliente WHERE Cliente_email = ?';
 
